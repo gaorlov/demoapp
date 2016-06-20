@@ -16,12 +16,11 @@ resources:
     repository: avvo/demoapp
 
 jobs:
-- name: master
+- name: build-candidate
   plan:
   - get: demoapp
     trigger: true
 
-  # build
   - put: candidate-image
     params:
       build: ./demoapp
@@ -29,8 +28,11 @@ jobs:
   - task: unit-tests
     file: demoapp/ci/unit-tests.yml
 
-  - task: deploy-stag
-    file: demoapp/ci/deploy-stag.yml
+- name: deploy-stag
+  plan:
+  - get: candidate-image
+    trigger: true
+    passed: [build-candidate]
 
   - task: acceptance-tests
     file: demoapp/ci/acceptance-tests.yml
@@ -38,6 +40,12 @@ jobs:
   - put: final-image
     params:
       build: ./demoapp
+
+- name: deploy-production
+  plan:
+  - get: final-image
+    trigger: true
+    passed: [deploy-stag]
 
   - task: deploy-production
     file: demoapp/ci/deploy-production.yml
