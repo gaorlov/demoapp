@@ -3,10 +3,15 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: avvo/ruby
+    repository: ruby
+    tag: '2.1'
 
 inputs:
 - name: demoapp
 
 run:
   path: ./demoapp/ci/run.sh
+  # path: ls
+  # args:
+    # - -al
+    # - demoapp/ci
