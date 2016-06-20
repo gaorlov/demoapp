@@ -5,6 +5,11 @@ resources:
     uri: https://github.com/chingor13/demoapp
     branch: master
 
+- name: demoapp-image
+  type: docker-image
+  source:
+    repository: avvo/demoapp
+
 jobs:
 - name: test-app
   plan:
@@ -12,3 +17,6 @@ jobs:
     trigger: true
   - task: tests
     file: demoapp/ci/build.yml
+  - put: demoapp-image
+    params:
+      build: ./demoapp
