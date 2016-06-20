@@ -1,0 +1,13 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: ruby
+    tag: '2.1'
+
+inputs:
+- name: demoapp
+
+run:
+  path: ./demoapp/ci/run.sh

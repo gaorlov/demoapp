@@ -5,18 +5,39 @@ resources:
     uri: https://github.com/chingor13/demoapp
     branch: master
 
-- name: demoapp-image
+- name: candidate-image
+  type: docker-image
+  source:
+    repository: "https://registry.docker.prod.avvo.com/avvo/demoapp"
+
+- name: final-image
   type: docker-image
   source:
     repository: avvo/demoapp
 
 jobs:
-- name: test-app
+- name: master
   plan:
   - get: demoapp
     trigger: true
-  - task: tests
-    file: demoapp/ci/build.yml
-  - put: demoapp-image
+
+  # build
+  - put: candidate-image
     params:
       build: ./demoapp
+
+  - task: unit-tests
+    file: demoapp/ci/unit-tests.yml
+
+  - task: deploy-stag
+    file: demoapp/ci/deploy-stag.yml
+
+  - task: acceptance-tests
+    file: demoapp/ci/acceptance-tests.yml
+
+  - put: final-image
+    params:
+      build: ./demoapp
+
+  - task: deploy-production
+    file: demoapp/ci/deploy-production.yml
