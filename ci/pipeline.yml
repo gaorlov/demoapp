@@ -1,5 +1,5 @@
 resources:
-- name: demoapp
+- name: master
   type: git
   source:
     uri: https://github.com/chingor13/demoapp
@@ -8,7 +8,7 @@ resources:
 - name: candidate-image
   type: docker-image
   source:
-    repository: "https://registry.docker.prod.avvo.com/avvo/demoapp"
+    repository: "https://registry.docker.prod.avvo.com:443/avvo/demoapp"
 
 - name: final-image
   type: docker-image
@@ -18,7 +18,7 @@ resources:
 jobs:
 - name: build-candidate
   plan:
-  - get: demoapp
+  - get: master
     trigger: true
 
   - put: candidate-image
