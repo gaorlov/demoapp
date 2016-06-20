@@ -7,6 +7,7 @@ WORKDIR $APP_HOME
 
 # Add Gemfile/install gems before touching application code
 ADD Gemfile* $APP_HOME/
+ADD vendor/cache $APP_HOME/
 
 RUN bundle install --local --deployment --without deployment development test
 
