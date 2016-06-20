@@ -1,0 +1,14 @@
+resources:
+- name: demoapp
+  type: git
+  source:
+    uri: https://github.com/chingor13/demoapp
+    branch: master
+
+jobs:
+- name: test-app
+  plan:
+  - get: demoapp
+    trigger: true
+  - task: tests
+    file: demoapp/ci/build.yml
