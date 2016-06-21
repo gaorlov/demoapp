@@ -1,5 +1,5 @@
 resources:
-- name: master
+- name: resource-app-code
   type: git
   source:
     uri: https://github.com/chingor13/demoapp
@@ -24,24 +24,30 @@ resources:
 jobs:
 - name: build-candidate
   plan:
-  - get: master
+  - get: resource-app-code
     trigger: true
 
   - put: candidate-image
     params:
-      build: master
+      build: resource-app-code
 
-  - task: unit-tests
-    file: master/ci/unit-tests.yml
-
-- name: deploy-stag
+- name: verify-build
   plan:
   - get: candidate-image
     trigger: true
     passed: [build-candidate]
 
+  - task: unit-tests
+    file: resource-app-code/ci/unit-tests.yml
+
+- name: deploy-stag
+  plan:
+  - get: candidate-image
+    trigger: true
+    passed: [verify-build]
+
   - task: acceptance-tests
-    file: master/ci/acceptance-tests.yml
+    file: resource-app-code/ci/acceptance-tests.yml
 
   - put: final-image
     params:
@@ -54,4 +60,4 @@ jobs:
     passed: [deploy-stag]
 
   - task: deploy-production
-    file: master/ci/deploy-production.yml
+    file: resource-app-code/ci/deploy-production.yml
