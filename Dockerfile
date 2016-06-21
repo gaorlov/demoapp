@@ -5,9 +5,14 @@ ENV APP_HOME /srv/demoapp/current
 RUN mkdir -p $APP_HOME/lib
 WORKDIR $APP_HOME
 
+RUN apk update && \
+    apk upgrade && \
+    apk add sqlite-dev && \
+    rm -rf /var/cache/apk/*
+
 # Add Gemfile/install gems before touching application code
 ADD Gemfile* $APP_HOME/
-ADD vendor/cache $APP_HOME/
+ADD vendor/cache $APP_HOME/vendor/cache
 
 RUN bundle install --local --deployment --without deployment development test
 
