@@ -8,12 +8,18 @@ resources:
 - name: candidate-image
   type: docker-image
   source:
-    repository: registry.docker.prod.avvo.com:443/avvo/demoapp
+    repository: avvo/demoapp
+    username: {{dockerhub-username}}
+    password: {{dockerhub-password}}
+    tag: candidate
 
 - name: final-image
   type: docker-image
   source:
     repository: avvo/demoapp
+    username: {{dockerhub-username}}
+    password: {{dockerhub-password}}
+    tag: latest
 
 jobs:
 - name: build-candidate
@@ -24,11 +30,9 @@ jobs:
   - put: candidate-image
     params:
       build: master
-    get_params:
-      rootfs: true
 
   - task: unit-tests
-    file: demoapp/ci/unit-tests.yml
+    file: master/ci/unit-tests.yml
 
 - name: deploy-stag
   plan:
@@ -37,7 +41,7 @@ jobs:
     passed: [build-candidate]
 
   - task: acceptance-tests
-    file: demoapp/ci/acceptance-tests.yml
+    file: master/ci/acceptance-tests.yml
 
   - put: final-image
     params:
@@ -50,4 +54,4 @@ jobs:
     passed: [deploy-stag]
 
   - task: deploy-production
-    file: demoapp/ci/deploy-production.yml
+    file: master/ci/deploy-production.yml
