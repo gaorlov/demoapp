@@ -8,7 +8,7 @@ resources:
 - name: candidate-image
   type: docker-image
   source:
-    repository: "https://registry.docker.prod.avvo.com:443/avvo/demoapp"
+    repository: registry.docker.prod.avvo.com:443/avvo/demoapp
 
 - name: final-image
   type: docker-image
