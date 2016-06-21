@@ -23,7 +23,9 @@ jobs:
 
   - put: candidate-image
     params:
-      build: ./demoapp
+      build: master
+    get_params:
+      rootfs: true
 
   - task: unit-tests
     file: demoapp/ci/unit-tests.yml
