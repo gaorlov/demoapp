@@ -2,7 +2,7 @@ resource_types:
 - name: rancher-deploy
   type: docker-image
   source:
-    repository: avvo/rancher-deploy
+    repository: chingor13/concourse_debug_resource
 
 resources:
 - name: resource-app-code
@@ -60,7 +60,7 @@ jobs:
     passed: [build-candidate]
 
   - task: unit-tests
-    file: resource-app-code/ci/unit-tests.yml
+    file: resource-app-code/ci/tasks/unit-tests.yml
 
 - name: deploy-stag
   plan:
@@ -82,7 +82,7 @@ jobs:
     trigger: true
 
   - task: acceptance-tests
-    file: resource-app-code/ci/acceptance-tests.yml
+    file: resource-app-code/ci/tasks/acceptance-tests.yml
 
 - name: build-release
   plan:

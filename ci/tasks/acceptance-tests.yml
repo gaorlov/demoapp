@@ -7,5 +7,5 @@ image_resource:
     tag: candidate
 
 run:
-  path: ci/run.sh
+  path: ci/tasks/run.sh
   dir: /srv/demoapp/current
