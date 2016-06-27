@@ -2,7 +2,12 @@ resource_types:
 - name: rancher-deploy
   type: docker-image
   source:
-    repository: chingor13/concourse_debug_resource
+    repository: avvo/concourse_rancher_resource
+    username: {{dockerhub-username}}
+    password: {{dockerhub-password}}
+    access_key: {{rancher-access-key}}
+    secret_key: {{rancher-secret-key}}
+    tag: latest
 
 resources:
 - name: resource-app-code
