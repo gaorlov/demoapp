@@ -1,0 +1,62 @@
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
+resources:
+- name: resource-app-code
+  type: git
+  source:
+    uri: https://github.com/gaorlov/demoapp
+    branch: master
+
+- name: repo
+  type: pull-request
+  source:
+    access_token: {{access-token}}
+    repo: gaorlov/demoapp
+
+- name: candidate-image
+  type: docker-image
+  source:
+    repository: avvo/demoapp
+    username: {{dockerhub-username}}
+    password: {{dockerhub-password}}
+    tag: gaorlov-candidate
+
+
+jobs:
+- name: build-candidate
+  plan:
+  - get: resource-app-code
+    trigger: true
+
+  - put: candidate-image
+    params:
+      build: resource-app-code
+
+- name: test-pull-request
+  plan:
+  - get: repo
+    trigger: true
+  - put: repo
+    params:
+      path: repo
+      status: pending
+  - task: do something with git
+    config:
+      platform: linux
+      image: docker:///concourse/git-resource
+      run:
+        path: sh
+        args:
+        - -c
+        - cd repo && git --no-pager show
+      inputs:
+      - name: repo
+        path: ""
+  - put: repo
+    params:
+      path: repo
+      status: success
