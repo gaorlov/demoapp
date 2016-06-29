@@ -27,7 +27,7 @@ resources:
 
 
 jobs:
-- name: test-pull-request
+- name: monitor-pull-requests
   plan:
   - get: repo
     trigger: true
@@ -49,9 +49,15 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: pr-image
+          repository: avvo/demoapp
+          username: {{dockerhub-username}}
+          password: {{dockerhub-password}}
+          tag: gaorlov-candidate
       run:
-        path: repo/bin/rake
+        path: sh
+        args:
+        - -c
+        - cd /srv/demoapp/current && bundle install && bin/rake
 
   - put: repo
     params:
