@@ -43,6 +43,7 @@ jobs:
   plan:
   - get: pr-image
     trigger: true
+  - get: repo
   - task: run the actual test
     config:
       platform: linux
@@ -57,7 +58,7 @@ jobs:
         path: sh
         args:
         - -c
-        - cd /srv/demoapp/current && bundle install && bin/rake
+        - cd /srv/demoapp/current && bundle install --local --without development && RAILS_ENV=test bin/rake test
 
   - put: repo
     params:
