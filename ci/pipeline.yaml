@@ -44,9 +44,17 @@ jobs:
     params:
       path: repo
       status: pending
-  - task: run tests
-    file: /srv//srv/demoapp/current/ci/unit-tests.yml
-  - put: repo
+  - put: pr-image
     params:
-      path: repo
-      status: success
+      build: repo
+
+- name: test-pr-image
+  plan:
+    - get: pr-image
+      trigger: true
+    - task: run the actual test
+      
+    - put: repo
+      params:
+        path: repo
+        status: success
