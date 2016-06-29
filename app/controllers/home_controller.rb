@@ -1,7 +1,5 @@
 class HomeController < ApplicationController
-
-
-  def show
+  def index
     render json: "lol"
   end
 end
