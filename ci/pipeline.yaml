@@ -23,6 +23,7 @@ resources:
     repository: avvo/demoapp
     username: {{dockerhub-username}}
     password: {{dockerhub-password}}
+    # this has to be branch-specific. but i have no idea how to do that
     tag: gaorlov-candidate
 
 
