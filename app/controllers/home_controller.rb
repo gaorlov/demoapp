@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
   def index
-    render json: "lol"
+    render json: {key: :value}
   end
 end

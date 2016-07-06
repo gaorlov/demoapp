@@ -2,7 +2,12 @@ resource_types:
 - name: pull-request
   type: docker-image
   source:
-    repository: jtarchie/pr
+    repository: avvo/pullrequest-resource
+
+- name: avvo-docker-image
+  type: docker-image
+  source:
+    repository: avvo/docker-image-resource
 
 resources:
 - name: resource-app-code
@@ -18,14 +23,13 @@ resources:
     repo: gaorlov/demoapp
 
 - name: pr-image
-  type: docker-image
+  type: avvo-docker-image
   source:
     repository: avvo/demoapp
     username: {{dockerhub-username}}
     password: {{dockerhub-password}}
     # this has to be branch-specific. but i have no idea how to do that
     tag: gaorlov-candidate
-
 
 jobs:
 - name: monitor-pull-requests
