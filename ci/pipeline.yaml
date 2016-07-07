@@ -2,7 +2,7 @@ resource_types:
 - name: pull-request
   type: docker-image
   source:
-    repository: avvo/pullrequest-resource
+    repository: jtarchie/pr
 
 - name: avvo-docker-image
   type: docker-image
@@ -29,7 +29,8 @@ resources:
     username: {{dockerhub-username}}
     password: {{dockerhub-password}}
     # this has to be branch-specific. but i have no idea how to do that
-    tag: gaorlov-candidate
+    tag: pr-candidate
+    dockerhost: {{docker-build-server}}
 
 jobs:
 - name: monitor-pull-requests
@@ -42,6 +43,7 @@ jobs:
       status: pending
   - put: pr-image
     params:
+      tag_prefix_command: cd repo ; cat .git/HEAD | grep -o "[a-z]*$" | xargs -i echo {}-
       build: repo
 
 - name: test-pr-image
