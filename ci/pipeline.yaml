@@ -1,0 +1,73 @@
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
+- name: avvo-docker-image
+  type: docker-image
+  source:
+    repository: avvo/docker-image-resource
+
+resources:
+- name: resource-app-code
+  type: git
+  source:
+    uri: https://github.com/gaorlov/demoapp
+    branch: master
+
+- name: repo
+  type: pull-request
+  source:
+    access_token: {{access-token}}
+    repo: gaorlov/demoapp
+
+- name: pr-image
+  type: avvo-docker-image
+  source:
+    repository: avvo/demoapp
+    username: {{dockerhub-username}}
+    password: {{dockerhub-password}}
+    # this has to be branch-specific. but i have no idea how to do that
+    tag: pr-candidate
+    dockerhost: {{docker-build-server}}
+
+jobs:
+- name: monitor-pull-requests
+  plan:
+  - get: repo
+    trigger: true
+  - put: repo
+    params:
+      path: repo
+      status: pending
+  - put: pr-image
+    params:
+      tag_prefix_command: cd repo ; cat .git/HEAD | grep -o "[a-z]*$" | xargs -i echo {}-
+      build: repo
+
+- name: test-pr-image
+  plan:
+  - get: pr-image
+    trigger: true
+  - get: repo
+  - task: run the actual test
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: avvo/demoapp
+          username: {{dockerhub-username}}
+          password: {{dockerhub-password}}
+          tag: gaorlov-candidate
+      run:
+        path: sh
+        args:
+        - -c
+        - cd /srv/demoapp/current && bundle install --local --without development && RAILS_ENV=test bin/rake test
+
+  - put: repo
+    params:
+      path: repo
+      status: success

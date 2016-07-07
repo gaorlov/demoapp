@@ -8,6 +8,7 @@ WORKDIR $APP_HOME
 RUN apk update && \
     apk upgrade && \
     apk add sqlite-dev && \
+    apk add nodejs && \
     rm -rf /var/cache/apk/*
 
 # Add Gemfile/install gems before touching application code
