@@ -28,12 +28,10 @@ resources:
     repository: avvo/demoapp
     username: {{dockerhub-username}}
     password: {{dockerhub-password}}
-    # this has to be branch-specific. but i have no idea how to do that
-    tag: pr-candidate
-    dockerhost: {{docker-build-server}}
+    docker_host: {{docker-build-server}}
 
 jobs:
-- name: monitor-pull-requests
+- name: run tests for merge request
   plan:
   - get: repo
     trigger: true
@@ -45,27 +43,28 @@ jobs:
     params:
       tag_prefix_command: cd repo ; cat .git/HEAD | grep -o "[a-z]*$" | xargs -i echo {}-
       build: repo
-
-- name: test-pr-image
-  plan:
-  - get: pr-image
-    trigger: true
-  - get: repo
-  - task: run the actual test
+  - task: run tests
     config:
       platform: linux
       image_resource:
-        type: docker-image
+        type: avvo-docker-image
         source:
-          repository: avvo/demoapp
+          repository: avvo/ruby
           username: {{dockerhub-username}}
           password: {{dockerhub-password}}
-          tag: gaorlov-candidate
+          dockerhost: {{docker-build-server}}
+      inputs:
+        - name: repo  
+        - name: pr-image
+          
       run:
         path: sh
         args:
         - -c
-        - cd /srv/demoapp/current && bundle install --local --without development && RAILS_ENV=test bin/rake test
+        - cd repo ;
+        - gem install bundler ;
+        - bundle install --local --without development ;
+        - RAILS_ENV=test bin/rake test
 
   - put: repo
     params:
